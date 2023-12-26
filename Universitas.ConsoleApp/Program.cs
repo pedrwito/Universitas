@@ -1,5 +1,4 @@
-﻿using Universitas.Persistance;
-using Universitas.Contracts.Models;
+﻿using Universitas.Contracts.Models;
 
 namespace Universitas.ConsoleApp
 {

@@ -1,11 +1,4 @@
-﻿using Universitas.Contracts.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Universitas.Contracts.Repositories
+﻿namespace Universitas.Contracts.Repositories
 {
     public interface IRepository <T>
     {
