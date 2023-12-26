@@ -4,22 +4,21 @@ using Universitas.Contracts.Repositories;
 
 namespace Universitas.Persistance.Repositories
 {
-    internal class MateriasRepository : RepositoryDB<Materia>, IMateriasRepository
+    internal class MateriasRepository : BaseRepository<Materia>, IMateriasRepository
     {
-
         public MateriasRepository(NpgsqlDataSource dataSource) : base(dataSource) { }
 
         public override async Task CreateAsync(Materia entity)
         {
             string query = "INSERT INTO universidad.materias(nombre) VALUES($1) RETURNING id";
             int ID = await ExecuteScalarIntAsync(query, new object[] { entity.Nombre });
-            entity.ID = ID;
+            entity.Id = ID;
         }
 
-        public override async Task DeleteAsync(Materia entity)
+        public override async Task DeleteAsync(int id)
         {
             string query = "DELETE FROM universidad.materias WHERE id = $1";
-            await ExecuteNonQueryAsync(query, new object[] { entity.ID });
+            await ExecuteNonQueryAsync(query, new object[] { id });
         }
 
         public async Task<List<Materia>> GetByNombreAsync(string nombre)
@@ -41,19 +40,15 @@ namespace Universitas.Persistance.Repositories
             return listaMaterias;
         }
 
-        public async Task<Materia?> GetByIdAsync(int id)
+        public override async Task<Materia?> GetByIdAsync(int id)
         {
             string query = "SELECT (nombre,id) FROM universidad.materias WHERE id = $1";
 
             using NpgsqlDataReader reader = await GetQueryReaderAsync(query, new object[] { id });
 
-            reader.Read();
-
             if (reader.Read())
             {
-                return new Materia(
-                    reader.GetString(0),
-                    reader.GetInt32(1));
+                return MapRowToModel(reader);
             }
 
             return null;
@@ -64,15 +59,13 @@ namespace Universitas.Persistance.Repositories
             string query = "SELECT m.* from universidad.materias a WHERE " +
                 "EXISTS(SELECT am.id_materia FROM alumnos_en_materias am WHERE am.id_alumno = $1 AND am.id_materia = m.id)";
 
-            using NpgsqlDataReader reader = await GetQueryReaderAsync(query, new object[] { alumno.ID });
+            using NpgsqlDataReader reader = await GetQueryReaderAsync(query, new object[] { alumno.Id });
 
             var listaMaterias = new List<Materia>();
 
             while (reader.Read())
             {
-                var materia = new Materia(
-                    (string)reader["nombre"],
-                    (int)reader["id"]);
+                var materia = MapRowToModel(reader);
 
                 listaMaterias.Add(materia);
             }
@@ -83,8 +76,30 @@ namespace Universitas.Persistance.Repositories
         public override async Task UpdateAsync(Materia entity)
         {
             string query = "UPDATE universidad.materias SET nombre = $1 WHERE id = $2";
-            await ExecuteNonQueryAsync(query, new object[] { entity.Nombre, entity.ID });
+            await ExecuteNonQueryAsync(query, new object[] { entity.Nombre, entity.Id });
         }
 
+        public override async Task<IEnumerable<Materia>> GetAllAsync()
+        {
+            string query = "SELECT (nombre,apellido,national_id,estado,id) FROM universidad.materias";
+
+            using NpgsqlDataReader reader = await GetQueryReaderAsync(query);
+
+            var coursestList = new List<Materia>();
+
+            while (reader.Read())
+            {
+                coursestList.Add(MapRowToModel(reader));
+            }
+
+            return coursestList;
+        }
+
+        protected override Materia MapRowToModel(NpgsqlDataReader reader)
+        {
+            return new Materia(
+                    (string)reader["nombre"],
+                    (int)reader["id"]);
+        }
     }
 }

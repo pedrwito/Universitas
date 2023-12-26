@@ -3,17 +3,16 @@
     public class Alumno : Persona
     {
         public EstadoAlumno Estado;
-        public Alumno(string nombre, string apellido, int dni) : base(nombre, apellido, dni, null)
+
+        public Alumno(string nombre, string apellido, string nationalId) : base(nombre, apellido, nationalId, null)
         {
             this.Estado = EstadoAlumno.Activo;
-
         }
 
-        public Alumno(string nombre, string apellido, int dni, EstadoAlumno estado, int id) : base(nombre, apellido, dni, id)
+        public Alumno(string nombre, string apellido, string nationalId, EstadoAlumno estado, int id) : base(nombre, apellido, nationalId, id)
         {
             this.Estado = estado;
-            this.ID = id;
+            this.Id = id;
         }
-
     }
 }

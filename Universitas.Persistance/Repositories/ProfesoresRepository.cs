@@ -4,21 +4,21 @@ using Universitas.Contracts.Repositories;
 
 namespace Universitas.Persistance.Repositories
 {
-    internal class ProfesoresRepository : RepositoryDB<Profesor>, IProfesoresRepository
+    internal class ProfesoresRepository : BaseRepository<Profesor>, IProfesoresRepository
     {
         public ProfesoresRepository(NpgsqlDataSource dataSource) : base(dataSource) { }
 
         public override async Task CreateAsync(Profesor entity)
         {
-            string query = "INSERT INTO universidad.profesores(nombre, apellido, dni) VALUES($1, $2, $3) RETURNING id";
-            int ID = await ExecuteScalarIntAsync(query, new object[] { entity.Nombre, entity.Apellido, entity.DNI });
-            entity.ID = ID;
+            string query = "INSERT INTO universidad.profesores(nombre, apellido, national_id) VALUES($1, $2, $3) RETURNING id";
+            int ID = await ExecuteScalarIntAsync(query, new object[] { entity.Nombre, entity.Apellido, entity.NationalId });
+            entity.Id = ID;
         }
 
-        public override async Task DeleteAsync(Profesor entity)
+        public override async Task DeleteAsync(int id)
         {
             string query = "DELETE FROM universidad.profesores WHERE id = $1";
-            await ExecuteNonQueryAsync(query, new object[] { entity.ID });
+            await ExecuteNonQueryAsync(query, new object[] { id });
         }
 
         public async Task<List<Profesor>> GetByApellidoAsync(string apellido)
@@ -32,11 +32,7 @@ namespace Universitas.Persistance.Repositories
 
             while (reader.Read())
             {
-                Profesor profesor = new Profesor(
-                    (string)reader["nombre"],
-                    (string)reader["apellido"],
-                    (int)reader["dni"],
-                    (int)reader["id"]);
+                Profesor profesor = MapRowToModel(reader);
 
                 listaProfesores.Add(profesor);
             }
@@ -44,21 +40,15 @@ namespace Universitas.Persistance.Repositories
             return listaProfesores;
         }
 
-        public async Task<Profesor?> GetByIdAsync(int id)
+        public override async Task<Profesor?> GetByIdAsync(int id)
         {
-            string query = "SELECT (nombre,apellido,dni,id) FROM universidad.profesores WHERE id = $1";
+            string query = "SELECT (nombre,apellido,national_id,id) FROM universidad.profesores WHERE id = $1";
 
             using NpgsqlDataReader reader = await GetQueryReaderAsync(query, new object[] { id });
 
-            reader.Read();
-
             if (reader.Read())
             {
-                return new Profesor(
-                    reader.GetString(0),
-                    reader.GetString(1),
-                    reader.GetInt32(2),
-                    reader.GetInt32(3));
+                return MapRowToModel(reader);
             }
 
             return null;
@@ -69,17 +59,13 @@ namespace Universitas.Persistance.Repositories
             string query = "SELECT a.* from universidad.profesores a WHERE " +
                 "EXISTS(SELECT am.id_profesor FROM profesores_en_materias am WHERE am.id_materia = $1 AND am.id_profesor = a.id)";
 
-            using NpgsqlDataReader reader = await GetQueryReaderAsync(query, new object[] { materia.ID });
+            using NpgsqlDataReader reader = await GetQueryReaderAsync(query, new object[] { materia.Id });
 
             var listaProfesores = new List<Profesor>();
 
             while (reader.Read())
             {
-                var profesor = new Profesor(
-                    reader.GetString(0),
-                    reader.GetString(1),
-                    reader.GetInt32(2),
-                    reader.GetInt32(4));
+                var profesor = MapRowToModel(reader);
 
                 listaProfesores.Add(profesor);
             }
@@ -89,8 +75,39 @@ namespace Universitas.Persistance.Repositories
 
         public override async Task UpdateAsync(Profesor entity)
         {
-            string query = "UPDATE universidad.profesores SET nombre = $1, apellido = $2, dni = $3, estado = $4 WHERE id = $5";
-            await ExecuteNonQueryAsync(query, new object[] { entity.Nombre, entity.Apellido, entity.DNI, entity.ID });
+            string query = "UPDATE universidad.profesores SET nombre = $1, apellido = $2, national_id = $3, estado = $4 WHERE id = $5";
+            await ExecuteNonQueryAsync(query, new object[] { entity.Nombre, entity.Apellido, entity.NationalId, entity.Id });
+        }
+
+        public async Task<bool> ExistsByNationalIdAsync(string national_id)
+        {
+            return await ExecuteScalarAsync<bool>("SELECT FROM universidad.profesores WHERE national_id = $1", new[] { national_id });
+        }
+
+        public override async Task<IEnumerable<Profesor>> GetAllAsync()
+        {
+            string query = "SELECT (nombre,apellido,national_id,estado,id) FROM universidad.alumnos";
+
+            using NpgsqlDataReader reader = await GetQueryReaderAsync(query);
+
+            var professorList = new List<Profesor>();
+
+            while (reader.Read())
+            {
+                professorList.Add(MapRowToModel(reader));
+            }
+
+            return professorList;
+        }
+
+        protected override Profesor MapRowToModel(NpgsqlDataReader reader)
+        {
+            return new Profesor(
+                    (string)reader["nombre"],
+                    (string)reader["apellido"],
+                    (string)reader["national_id"],
+                    (int)reader["id"]);
         }
     }
 }
+

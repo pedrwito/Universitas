@@ -3,18 +3,21 @@ using Universitas.Contracts.Repositories;
 
 namespace Universitas.Persistance.Repositories
 {
-    internal abstract class RepositoryDB<T> : IRepository<T>
+    internal abstract class BaseRepository<T> : IRepository<T>
     {
         private NpgsqlDataSource _dataSource;
 
-        public RepositoryDB(NpgsqlDataSource dataSource)
+        public BaseRepository(NpgsqlDataSource dataSource)
         {
             _dataSource = dataSource;
         }
 
         public abstract Task CreateAsync(T entity);
-        public abstract Task DeleteAsync(T entity);
+        public abstract Task DeleteAsync(int id);
+        public abstract Task<IEnumerable<T>> GetAllAsync();
+        public abstract Task<T?> GetByIdAsync(int id);
         public abstract Task UpdateAsync(T entity);
+        protected abstract T MapRowToModel(NpgsqlDataReader reader);
 
         protected async Task<int> ExecuteNonQueryAsync(string query, object[] parameters)
         {
@@ -27,7 +30,7 @@ namespace Universitas.Persistance.Repositories
                 int rowsAffected = await command.ExecuteNonQueryAsync();
                 if (rowsAffected == 0)
                 {
-                    throw new Exception("No se pudo ejecutar la query");
+                    throw new InvalidOperationException("No se pudo ejecutar la query");
                 }
 
                 return rowsAffected;
@@ -36,7 +39,6 @@ namespace Universitas.Persistance.Repositories
 
         protected async Task<RetType> ExecuteScalarAsync<RetType>(string query, object[] parameters)
         {
-
             using (NpgsqlCommand command = _dataSource.CreateCommand(query))
             {
                 command.Parameters.AddRange(parameters);
@@ -57,11 +59,14 @@ namespace Universitas.Persistance.Repositories
             return await ExecuteScalarAsync<int>(query, parameters);
         }
 
-        protected async Task<NpgsqlDataReader> GetQueryReaderAsync(string query, object[] parameters)
+        protected async Task<NpgsqlDataReader> GetQueryReaderAsync(string query, object[]? parameters = null)
         {
             using (NpgsqlCommand command = _dataSource.CreateCommand(query))
             {
-                command.Parameters.AddRange(parameters);
+                if (parameters != null)
+                {
+                    command.Parameters.AddRange(parameters);
+                }
 
                 return await command.ExecuteReaderAsync();
             }

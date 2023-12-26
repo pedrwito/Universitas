@@ -1,6 +1,17 @@
-﻿namespace Universitas.Contracts.Services
+﻿using Universitas.Contracts.Models;
+
+namespace Universitas.Contracts.Services
 {
-    internal class IMateriasService
+    public interface IMateriasService
     {
+        Task<Materia> CreateAsync(string name);
+
+        Task<Materia> UpdateAsync(int id, string name);
+
+        Task DeleteAsync(int id);
+
+        Task<Materia> GetByIdAsync(int id);
+
+        Task<IEnumerable<Materia>> GetAllAsync();
     }
 }
