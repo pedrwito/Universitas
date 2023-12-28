@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Universitas.Persistance", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Universitas.Services", "Universitas.Services\Universitas.Services.csproj", "{A008B79C-1C41-4822-9FCC-A01C5A4B3E31}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Universitas.API", "Universitas.API\Universitas.API.csproj", "{2A35D83A-E4AA-461A-BC32-D63438D6A5CD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{A008B79C-1C41-4822-9FCC-A01C5A4B3E31}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A008B79C-1C41-4822-9FCC-A01C5A4B3E31}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A008B79C-1C41-4822-9FCC-A01C5A4B3E31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A35D83A-E4AA-461A-BC32-D63438D6A5CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A35D83A-E4AA-461A-BC32-D63438D6A5CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A35D83A-E4AA-461A-BC32-D63438D6A5CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A35D83A-E4AA-461A-BC32-D63438D6A5CD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

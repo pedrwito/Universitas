@@ -7,7 +7,7 @@ namespace Universitas.ConsoleApp
         static void Main(string[] args)
         {
 
-            Alumno pedro = new Alumno("pedro","barrera","1235678");
+            Student pedro = new Student("pedro","barrera","1235678");
 
 
             //Database.GetInstance().Alumnos.CreateAsync(pedro);

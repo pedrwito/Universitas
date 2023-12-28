@@ -4,7 +4,7 @@ using Universitas.Persistance;
 
 namespace Universitas.Services
 {
-    public class ProfesoresService : IProfesoresService
+    public class ProfessorsService : IProfessorsService
     {
         private async Task ValidateStudentAsync(string name, string surname, string nationalId, bool checkIdRepeted = true)
         {
@@ -23,26 +23,26 @@ namespace Universitas.Services
                 throw new ArgumentNullException("National Id cannot be empty");
             }
 
-            if (checkIdRepeted && await Database.GetInstance().Profesores.ExistsByNationalIdAsync(nationalId))
+            if (checkIdRepeted && await Database.GetInstance().Professors.ExistsByNationalIdAsync(nationalId))
             {
                 throw new ArgumentException("National Id already exists");
             }
         }
 
-        public async Task<Profesor> CreateAsync(string name, string surname, string nationalId)
+        public async Task<Professor> CreateAsync(string name, string surname, string nationalId)
         {
             await ValidateStudentAsync(name, surname, nationalId);
-            Profesor profesor = new Profesor(name, surname, nationalId);
-            await Database.GetInstance().Profesores.CreateAsync(profesor);
+            Professor Professor = new Professor(name, surname, nationalId);
+            await Database.GetInstance().Professors.CreateAsync(Professor);
 
-            return profesor;
+            return Professor;
         }
 
         public async Task DeleteAsync(int id)
         {
             try
             {
-                await Database.GetInstance().Profesores.DeleteAsync(id);
+                await Database.GetInstance().Professors.DeleteAsync(id);
             }
             catch (InvalidOperationException)
             {
@@ -50,28 +50,28 @@ namespace Universitas.Services
             }
         }
 
-        public async Task<IEnumerable<Profesor>> GetAllAsync()
+        public async Task<IEnumerable<Professor>> GetAllAsync()
         {
-            return await Database.GetInstance().Profesores.GetAllAsync();
+            return await Database.GetInstance().Professors.GetAllAsync();
         }
 
-        public async Task<Profesor> GetByIdAsync(int id)
+        public async Task<Professor> GetByIdAsync(int id)
         {
-            return await Database.GetInstance().Profesores.GetByIdAsync(id)
+            return await Database.GetInstance().Professors.GetByIdAsync(id)
                  ?? throw new KeyNotFoundException("The Id does not correspond to any professor");
         }
 
-        public async Task<Profesor> UpdateAsync(int id, string name, string surname, string nationalId)
+        public async Task<Professor> UpdateAsync(int id, string name, string surname, string nationalId)
         {
-            Profesor professor = await GetByIdAsync(id);
+            Professor professor = await GetByIdAsync(id);
 
             await ValidateStudentAsync(name, surname, nationalId, professor.NationalId != nationalId);
 
             professor.NationalId = nationalId;
-            professor.Apellido = surname;
-            professor.Nombre = name;
+            professor.Surname = surname;
+            professor.Name = name;
 
-            await Database.GetInstance().Profesores.UpdateAsync(professor);
+            await Database.GetInstance().Professors.UpdateAsync(professor);
 
             return professor;
         }

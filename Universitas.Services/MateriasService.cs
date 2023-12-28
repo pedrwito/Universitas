@@ -4,7 +4,7 @@ using Universitas.Persistance;
 
 namespace Universitas.Services
 {
-    public class MateriasService : IMateriasService
+    public class CoursesService : ICoursesService
     {
         private void ValidateCourse(string name)
         {
@@ -14,20 +14,20 @@ namespace Universitas.Services
             }  
         }
 
-        public async Task<Materia> CreateAsync(string name)
+        public async Task<Course> CreateAsync(string name)
         {
             ValidateCourse(name);
-            Materia Materia = new Materia(name);
-            await Database.GetInstance().Materias.CreateAsync(Materia);
+            Course Course = new Course(name);
+            await Database.GetInstance().Courses.CreateAsync(Course);
 
-            return Materia;
+            return Course;
         }
 
         public async Task DeleteAsync(int id)
         {
             try
             {
-                await Database.GetInstance().Materias.DeleteAsync(id);
+                await Database.GetInstance().Courses.DeleteAsync(id);
             }
             catch (InvalidOperationException)
             {
@@ -35,26 +35,26 @@ namespace Universitas.Services
             }
         }
 
-        public async Task<IEnumerable<Materia>> GetAllAsync()
+        public async Task<IEnumerable<Course>> GetAllAsync()
         {
-            return await Database.GetInstance().Materias.GetAllAsync();
+            return await Database.GetInstance().Courses.GetAllAsync();
         }
 
-        public async Task<Materia> GetByIdAsync(int id)
+        public async Task<Course> GetByIdAsync(int id)
         {
-            return await Database.GetInstance().Materias.GetByIdAsync(id)
+            return await Database.GetInstance().Courses.GetByIdAsync(id)
                  ?? throw new KeyNotFoundException("The Id does not correspond to any course");
         }
 
-        public async Task<Materia> UpdateAsync(int id, string name)
+        public async Task<Course> UpdateAsync(int id, string name)
         {
             ValidateCourse(name);
 
-            Materia course = await GetByIdAsync(id);
+            Course course = await GetByIdAsync(id);
 
-            course.Nombre = name;
+            course.Name = name;
 
-            await Database.GetInstance().Materias.UpdateAsync(course);
+            await Database.GetInstance().Courses.UpdateAsync(course);
 
             return course;
         }

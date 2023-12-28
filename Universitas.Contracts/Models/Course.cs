@@ -1,13 +1,13 @@
 ﻿namespace Universitas.Contracts.Models
 {
-    public class Materia
+    public class Course
     {
         public int Id { get; set; }
-        public string Nombre { get; set; }
+        public string Name { get; set; }
 
-        public Materia(string nombre, int? id = null)
+        public Course(string name, int? id = null)
         {
-            this.Nombre = nombre;
+            this.Name = name;
             if (id != null)
             {
                 this.Id = id.Value;

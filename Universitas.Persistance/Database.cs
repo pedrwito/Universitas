@@ -15,16 +15,16 @@ namespace Universitas.Persistance
     {
         private static Database? instance = null;
         private readonly NpgsqlDataSource _dataSource;
-        public IAlumnosRepository Alumnos { get; private set; }
-        public IMateriasRepository Materias { get; private set; }
-        public IProfesoresRepository Profesores { get; private set; }
+        public IStudentsRepository Students { get; private set; }
+        public ICoursesRepository Courses { get; private set; }
+        public IProfessorsRepository Professors { get; private set; }
 
         private Database()
         {
             _dataSource = NpgsqlDataSource.Create("Host=127.0.0.1;Username=postgres;Password=pedri123;Database=postgres");
-            Alumnos = new AlumnosRepository(_dataSource);
-            Profesores = new ProfesoresRepository(_dataSource);
-            Materias = new MateriasRepository(_dataSource);
+            Students = new StudentsRepository(_dataSource);
+            Professors = new ProfessorsRepository(_dataSource);
+            Courses = new CoursesRepository(_dataSource);
         }
 
         public void Dispose()

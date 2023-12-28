@@ -2,9 +2,9 @@
 
 namespace Universitas.Contracts.Repositories
 {
-    public interface IProfesoresRepository : IRepository<Profesor>
+    public interface IProfessorsRepository : IRepository<Professor>
     {
-        public Task<List<Profesor>> GetByApellidoAsync(string apellido);
+        public Task<List<Professor>> GetBySurnameAsync(string surname);
 
         Task<bool> ExistsByNationalIdAsync(string national_id);
     }
