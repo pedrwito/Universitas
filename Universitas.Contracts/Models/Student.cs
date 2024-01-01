@@ -2,16 +2,16 @@
 {
     public class Student : Person
     {
-        public StudentStatus State;
+        public StudentStatus Status;
 
         public Student(string name, string surname, string nationalId) : base(name, surname, nationalId, null)
         {
-            this.State = StudentStatus.Active;
+            this.Status = StudentStatus.Active;
         }
 
-        public Student(string name, string surname, string nationalId, StudentStatus state, int id) : base(name, surname, nationalId, id)
+        public Student(string name, string surname, string nationalId, StudentStatus status, int id) : base(name, surname, nationalId, id)
         {
-            this.State = state;
+            this.Status = status;
             this.Id = id;
         }
     }

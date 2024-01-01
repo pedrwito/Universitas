@@ -19,13 +19,16 @@ namespace Universitas.Persistance.Repositories
         public abstract Task UpdateAsync(T entity);
         protected abstract T MapRowToModel(NpgsqlDataReader reader);
 
-        protected async Task<int> ExecuteNonQueryAsync(string query, object[] parameters)
+        protected async Task<int> ExecuteNonQueryAsync(string query, object[]? parameters = null)
         {
             using (NpgsqlCommand command = _dataSource.CreateCommand(query)) //using es basicamente hcaer que el objeto exista en memoria hasta
                                                                              //que se cierre la llave. Luego se llama a dispose para cerrarlo/sacarlo de memoria (Si una clase implementa IDisposable,
                                                                              //se tiene que llamar a dispose despues de usar al objeto para liquidarlo).
             {
-                command.Parameters.AddRange(parameters);
+                if(parameters != null)
+                {
+                    command.Parameters.AddRange(parameters.Select(p => new NpgsqlParameter(null, p)).ToArray());
+                }
 
                 int rowsAffected = await command.ExecuteNonQueryAsync();
                 if (rowsAffected == 0)
@@ -37,20 +40,23 @@ namespace Universitas.Persistance.Repositories
             }
         }
 
-        protected async Task<RetType> ExecuteScalarAsync<RetType>(string query, object[] parameters)
+        protected async Task<RetType> ExecuteScalarAsync<RetType>(string query, object[]? parameters = null)
         {
             using (NpgsqlCommand command = _dataSource.CreateCommand(query))
             {
-                command.Parameters.AddRange(parameters);
+                if (parameters != null)
+                {
+                    command.Parameters.AddRange(parameters.Select(p => new NpgsqlParameter(null, p)).ToArray());
+                }
 
-                RetType? scalar = (RetType?)await command.ExecuteScalarAsync();
+                object? scalar = await command.ExecuteScalarAsync();
 
                 if (scalar == null)
                 {
                     throw new Exception("No se pudo ejecutar la query");
                 }
 
-                return scalar;
+                return (RetType)scalar;
             }
         }
 
@@ -65,7 +71,7 @@ namespace Universitas.Persistance.Repositories
             {
                 if (parameters != null)
                 {
-                    command.Parameters.AddRange(parameters);
+                    command.Parameters.AddRange(parameters.Select(p => new NpgsqlParameter(null, p)).ToArray());
                 }
 
                 return await command.ExecuteReaderAsync();

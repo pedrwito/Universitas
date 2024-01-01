@@ -10,8 +10,8 @@ namespace Universitas.Persistance.Repositories
 
         public override async Task CreateAsync(Student entity)
         {
-            string query = "INSERT INTO universidad.students(name, surname, national_id, state) VALUES($1, $2, $3, $4) RETURNING id";
-            int ID = await ExecuteScalarIntAsync(query, new object[] { entity.Name, entity.Surname, entity.NationalId, entity.State });
+            string query = "INSERT INTO universidad.students(name, surname, national_id, status) VALUES($1, $2, $3, $4) RETURNING id";
+            int ID = await ExecuteScalarIntAsync(query, new object[] { entity.Name, entity.Surname, entity.NationalId, (int)entity.Status });
             entity.Id = ID;
         }
 
@@ -41,7 +41,7 @@ namespace Universitas.Persistance.Repositories
 
         public override async Task<Student?> GetByIdAsync(int id)
         {
-            string query = "SELECT (name,surname,national_id,state,id) FROM universidad.students WHERE id = $1";
+            string query = "SELECT (name,surname,national_id,status,id) FROM universidad.students WHERE id = $1";
 
             using NpgsqlDataReader reader = await GetQueryReaderAsync(query, new object[] { id });
 
@@ -74,19 +74,18 @@ namespace Universitas.Persistance.Repositories
 
         public override async Task UpdateAsync(Student entity)
         {
-            string query = "UPDATE universidad.students SET name = $1, surname = $2, national_id = $3, state = $4 WHERE id = $5";
-            await ExecuteNonQueryAsync(query, new object[] { entity.Name, entity.Surname, entity.NationalId, entity.State, entity.Id });
+            string query = "UPDATE universidad.students SET name = $1, surname = $2, national_id = $3, status = $4 WHERE id = $5";
+            await ExecuteNonQueryAsync(query, new object[] { entity.Name, entity.Surname, entity.NationalId, entity.Status, entity.Id });
         }
 
         public async Task<bool> ExistsByNationalIdAsync(string national_id)
         {
-            return await ExecuteScalarAsync<bool>("SELECT FROM universidad.students WHERE national_id = $1", new[] { national_id });
+            return await ExecuteScalarAsync<bool>("SELECT EXISTS(SELECT * FROM universidad.students WHERE national_id = $1)", new[] { national_id });
         }
 
         public override async Task<IEnumerable<Student>> GetAllAsync()
         {
-
-            string query = "SELECT (name,surname,national_id,state,id) FROM universidad.students";
+            string query = "SELECT name, surname, national_id, status, id FROM universidad.students";
 
             using NpgsqlDataReader reader = await GetQueryReaderAsync(query);
 
@@ -106,7 +105,7 @@ namespace Universitas.Persistance.Repositories
                     (string)reader["name"],
                     (string)reader["surname"],
                     (string)reader["national_id"],
-                    (StudentStatus)reader["state"],
+                    (StudentStatus)reader["status"],
                     (int)reader["id"]);
         }
 
