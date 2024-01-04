@@ -1,4 +1,4 @@
-﻿namespace Universitas.API.DTOs.Responses
+﻿namespace Universitas.API.DTOs.Auxiliar
 {
     public enum StudentStatusDTO
     {

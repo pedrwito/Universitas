@@ -1,3 +1,5 @@
+using Universitas.API.Middlewares;
+
 namespace Universitas.API
 {
     public class Program
@@ -13,7 +15,10 @@ namespace Universitas.API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+
             var app = builder.Build();
+
+            app.UseMiddleware<ExceptionHandlingMiddleware>();  // Agrego el middleware a la lista de middlewares que se ejecutan en cada request. Puedo tener muchos y en orden.
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

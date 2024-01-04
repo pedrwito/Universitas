@@ -6,6 +6,10 @@ namespace Universitas.Contracts.Repositories
     {
         public Task<List<Professor>> GetBySurnameAsync(string surname);
 
-        Task<bool> ExistsByNationalIdAsync(string national_id);
+        Task<bool> ExistsByNationalIdAsync(string nationalId);
+
+        Task<bool> ExistsByIdAsync(int id);
+
+        Task<List<Professor>> GetByCourseAsync(int courseID);
     }
 }

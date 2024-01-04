@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Universitas.API.DTOs.Auxiliar;
 using Universitas.API.DTOs.Requests;
 using Universitas.API.DTOs.Responses;
 using Universitas.Contracts.Models;
@@ -26,35 +27,43 @@ namespace Universitas.API.Controllers
             return (await studentsService.GetAllAsync()).Select(s => ToDTO(s));
         }
 
-        private static StudentDTO ToDTO(Student s)
-        {
-            return new StudentDTO(s.Id, s.Name, s.Surname, s.NationalId, (StudentStatusDTO)s.Status);
-        }
-
-        // GET api/<UniversitasController>/5
+        // GET api/students/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<StudentDTO> GetAsync(int id)
         {
-            return "value";
+            return ToDTO(await studentsService.GetByIdAsync(id));
         }
 
-        // POST api/<UniversitasController>
+        // POST api/students
         [HttpPost]
         public async Task<StudentDTO> PostAsync([FromBody] StudentCreateDTO dto)
         {
             return ToDTO(await studentsService.CreateAsync(dto.Name, dto.Surname, dto.NationalId));
         }
 
-        // PUT api/<UniversitasController>/5
+        // PUT api/students/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<StudentDTO> PutAsync(int id, [FromBody] StudentUpdateDTO dto)
         {
+            return ToDTO(await studentsService.UpdateAsync(id, dto.Name, dto.Surname, dto.NationalId, (int)dto.Status));
         }
 
-        // DELETE api/<UniversitasController>/5
+        // DELETE api/students/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
+            await studentsService.DeleteAsync(id);
+        }
+/*
+        [HttpGet("{id}")]
+        public async Task<IEnumerable<CourseDTO>> GetCoursesAsync(int id)
+        {
+            return (await studentsService.GetCoursesAsync(id)).Select(c => CoursesController.ToDTO(c));
+        }
+*/
+        private static StudentDTO ToDTO(Student s)
+        {
+            return new StudentDTO(s.Id, s.Name, s.Surname, s.NationalId, (StudentStatusDTO)s.Status);
         }
     }
 }

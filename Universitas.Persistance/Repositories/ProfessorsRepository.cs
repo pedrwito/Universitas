@@ -54,23 +54,23 @@ namespace Universitas.Persistance.Repositories
             return null;
         }
 
-        public async Task<List<Professor>> GetByCourseAsync(Course course)
+        public async Task<List<Professor>> GetByCourseAsync(int courseId)
         {
             string query = "SELECT p.* from universidad.professors p WHERE " +
-                "EXISTS(SELECT pc.id_professor FROM professors_in_courses pc WHERE am.id_course = $1 AND pc.id_professor = p.id)";
+                "EXISTS(SELECT pc.id_professor FROM professors_in_courses pc WHERE pc.id_course = $1 AND pc.id_professor = p.id)";
 
-            using NpgsqlDataReader reader = await GetQueryReaderAsync(query, new object[] { course.Id });
+            using NpgsqlDataReader reader = await GetQueryReaderAsync(query, new object[] { courseId });
 
-            var listaprofessors = new List<Professor>();
+            var professorsList = new List<Professor>();
 
             while (reader.Read())
             {
                 var Professor = MapRowToModel(reader);
 
-                listaprofessors.Add(Professor);
+                professorsList.Add(Professor);
             }
 
-            return listaprofessors;
+            return professorsList;
         }
 
         public override async Task UpdateAsync(Professor entity)
@@ -79,9 +79,14 @@ namespace Universitas.Persistance.Repositories
             await ExecuteNonQueryAsync(query, new object[] { entity.Name, entity.Surname, entity.NationalId, entity.Id });
         }
 
-        public async Task<bool> ExistsByNationalIdAsync(string national_id)
+        public async Task<bool> ExistsByNationalIdAsync(string nationalId)
         {
-            return await ExecuteScalarAsync<bool>("SELECT FROM universidad.professors WHERE national_id = $1", new[] { national_id });
+            return await ExecuteScalarAsync<bool>("SELECT EXISTS(SELECT * FROM universidad.professors WHERE national_id = $1)", new object[] { nationalId });
+        }
+
+        public async Task<bool> ExistsByIdAsync(int id)
+        {
+            return await ExecuteScalarAsync<bool>("SELECT EXISTS(SELECT * FROM universidad.professors WHERE id = $1)", new object[] { id });
         }
 
         public override async Task<IEnumerable<Professor>> GetAllAsync()

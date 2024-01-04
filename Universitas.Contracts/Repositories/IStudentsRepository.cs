@@ -6,11 +6,13 @@ namespace Universitas.Contracts.Repositories
     {
         Task<List<Student>> GetBySurnameAsync(string surname);
 
-        Task<List<Student>> GetByCourseAsync(Course course);
+        Task<List<Student>> GetByCourseAsync(int courseId);
 
         Task<bool> ExistsByNationalIdAsync(string national_id);
 
-        Task<int> GetAmountOfCorsesEnrolled(Student alumno);
+        Task<bool> ExistsByIdAsync(int id);
+
+        Task<int> GetAmountOfCorsesEnrolled(Student student);
 
     }
 }

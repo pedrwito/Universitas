@@ -53,12 +53,12 @@ namespace Universitas.Persistance.Repositories
             return null;
         }
 
-        public async Task<List<Student>> GetByCourseAsync(Course course)
+        public async Task<List<Student>> GetByCourseAsync(int courseId)
         {
             string query = "SELECT s.* from universidad.students s WHERE " +
-                "EXISTS(SELECT sc.id_alumno FROM alumnos_in_courses sc WHERE sc.id_course = $1 AND sc.id_student = s.id)";
+                "EXISTS(SELECT sc.id_student FROM students_in_courses sc WHERE sc.id_course = $1 AND sc.id_student = s.id)";
 
-            using NpgsqlDataReader reader = await GetQueryReaderAsync(query, new object[] { course.Id });
+            using NpgsqlDataReader reader = await GetQueryReaderAsync(query, new object[] { courseId });
 
             var studentsList = new List<Student>();
 
@@ -78,9 +78,14 @@ namespace Universitas.Persistance.Repositories
             await ExecuteNonQueryAsync(query, new object[] { entity.Name, entity.Surname, entity.NationalId, entity.Status, entity.Id });
         }
 
-        public async Task<bool> ExistsByNationalIdAsync(string national_id)
+        public async Task<bool> ExistsByNationalIdAsync(string nationalId)
         {
-            return await ExecuteScalarAsync<bool>("SELECT EXISTS(SELECT * FROM universidad.students WHERE national_id = $1)", new[] { national_id });
+            return await ExecuteScalarAsync<bool>("SELECT EXISTS(SELECT * FROM universidad.students WHERE national_id = $1)", new object[] { nationalId });
+        }
+
+        public async Task<bool> ExistsByIdAsync(int id)
+        {
+            return await ExecuteScalarAsync<bool>("SELECT EXISTS(SELECT * FROM universidad.students WHERE id = $1)", new object[] { id });
         }
 
         public override async Task<IEnumerable<Student>> GetAllAsync()
@@ -109,7 +114,7 @@ namespace Universitas.Persistance.Repositories
                     (int)reader["id"]);
         }
 
-        public async Task<int> GetAmountOfCorsesEnrolled(Student alumno)
+        public async Task<int> GetAmountOfCorsesEnrolled(Student alumno) //TODO
         {
             string query = "SELECT COUNT(a.*) FROM alumnos_en_Course a WHERE a.id_alumno = $1";
 

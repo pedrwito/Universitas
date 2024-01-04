@@ -6,7 +6,7 @@ namespace Universitas.Services
 {
     public class StudentsService : IStudentsService
     {
-        private async Task ValidateStudentAsync(string name, string surname, string nationalId, bool checkIdRepeted = true)
+        private async Task ValidateStudentAsync(string name, string surname, string nationalId, bool checkIdRepeted = true, int? status = null)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -26,6 +26,11 @@ namespace Universitas.Services
             if (checkIdRepeted && await Database.GetInstance().Students.ExistsByNationalIdAsync(nationalId))
             {
                 throw new ArgumentException("National Id already exists");
+            }
+
+            if (status != null && !Enum.IsDefined(typeof(StudentStatus), status)) 
+            {
+                throw new ArgumentException("Status value is invalid");
             }
         }
 
@@ -61,19 +66,32 @@ namespace Universitas.Services
                 ?? throw new KeyNotFoundException("The Id does not correspond to any student");
         }
 
-        public async Task<Student> UpdateAsync(int id, string name, string surname, string nationalId)
+        public async Task<Student> UpdateAsync(int id, string name, string surname, string nationalId, int status)
         {
             Student student = await GetByIdAsync(id);
             
-            await ValidateStudentAsync(name, surname, nationalId, student.NationalId != nationalId);
+            await ValidateStudentAsync(name, surname, nationalId, student.NationalId != nationalId, status);
 
             student.NationalId = nationalId;
             student.Surname = surname;
             student.Name = name;
+            student.Status = (StudentStatus)status;
 
             await Database.GetInstance().Students.UpdateAsync(student);
 
             return student;
+        }
+
+        public async Task<IEnumerable<Course>> GetCoursesAsync(int id)
+        {
+            if (!await Database.GetInstance().Courses.ExistsByIdAsync(id))
+            {
+                throw new KeyNotFoundException("The Id does not correspond to any course");
+            }
+                 
+            IEnumerable<Course> courseList = await Database.GetInstance().Courses.GetByStudentAsync(id);
+
+            return courseList;
         }
     }
 }

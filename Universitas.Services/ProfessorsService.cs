@@ -76,5 +76,17 @@ namespace Universitas.Services
             return professor;
         }
 
+        public async Task<IEnumerable<Course>> GetCoursesAsync(int id)
+        {
+            if (!await Database.GetInstance().Courses.ExistsByIdAsync(id))
+            {
+                throw new KeyNotFoundException("The Id does not correspond to any course");
+            }
+
+            IEnumerable<Course> courseList = await Database.GetInstance().Courses.GetByProfessorAsync(id);
+
+            return courseList;
+
+        }
     }
 }

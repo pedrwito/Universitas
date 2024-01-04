@@ -92,11 +92,76 @@ namespace Universitas.Persistance.Repositories
             return coursesList;
         }
 
+        public async Task<bool> ExistsByIdAsync(int id)
+        {
+            return await ExecuteScalarAsync<bool>("SELECT EXISTS(SELECT * FROM universidad.courses WHERE id = $1)", new object[] { id });
+        }
+
         protected override Course MapRowToModel(NpgsqlDataReader reader)
         {
             return new Course(
                     (string)reader["name"],
                     (int)reader["id"]);
+        }
+
+        public async Task<List<Course>> GetByStudentAsync(int studentID)
+        {
+            string query = "SELECT C.* from universidad.courses c WHERE " +
+                "EXISTS(SELECT sc.id_student FROM students_in_courses sc WHERE sc.id_student = $1 AND sc.id_course = c.id)";
+
+            using NpgsqlDataReader reader = await GetQueryReaderAsync(query, new object[] { studentID });
+
+            var coursesList = new List<Course>();
+
+            while (reader.Read())
+            {
+                var course = MapRowToModel(reader);
+
+                coursesList.Add(course);
+            }
+
+            return coursesList;
+        }
+
+        public async Task<List<Course>> GetByProfessorAsync(int professorID)
+        {
+            string query = "SELECT c.* from universidad.courses c WHERE " +
+                "EXISTS(SELECT pc.id_course FROM professors_in_courses pc WHERE pc.id_professor = $1 AND pc.course = c.id)";
+
+            using NpgsqlDataReader reader = await GetQueryReaderAsync(query, new object[] { professorID });
+
+            var coursesList = new List<Course>();
+
+            while (reader.Read())
+            {
+                var course = MapRowToModel(reader);
+
+                coursesList.Add(course);
+            }
+
+            return coursesList;
+        }
+
+        public async Task EnrollStudentAsync(int studentId, int courseId)
+        {
+            string query = "INSERT INTO universidad.students_in_courses(id_student, id_course) VALUES($1,$2)";
+            await ExecuteNonQueryAsync(query, new object[] { studentId, courseId });
+        }
+
+        public async Task EnrollProfessorAsync(int professorId, int courseId)
+        {
+            string query = "INSERT INTO universidad.professors_in_courses(id_professor, id_course) VALUES($1,$2)";
+            await ExecuteNonQueryAsync(query, new object[] { professorId, courseId });
+        }
+
+        public Task RemoveProfessorAsync(int professorId, int courseId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RemoveStudentAsync(int studentId, int courseId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

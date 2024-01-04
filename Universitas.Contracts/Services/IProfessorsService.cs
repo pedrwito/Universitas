@@ -13,5 +13,7 @@ namespace Universitas.Contracts.Services
         Task<Professor> GetByIdAsync(int id);
 
         Task<IEnumerable<Professor>> GetAllAsync();
+
+        Task<IEnumerable<Course>> GetCoursesAsync(int id);
     }
 }
