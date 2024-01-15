@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Universitas.Contracts.Exceptions;
 
 namespace Universitas.API.Middlewares
@@ -29,6 +28,12 @@ namespace Universitas.API.Middlewares
                 context.Response.StatusCode = ex.Code;
 
                 await context.Response.WriteAsync((new ErrorDetails(ex.Message, ex.Code)).ToString());
+            }
+            catch (Exception ex)
+            {
+                context.Response.ContentType = "application/json";
+
+                await context.Response.WriteAsync((new ErrorDetails(ex.Message, 500)).ToString());
             }
         }
     }

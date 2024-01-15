@@ -11,7 +11,7 @@ namespace Universitas.API.Controllers
 {
     [Route("api/professors")]
     [ApiController]
-    public class ProfessorsController : ControllerBase
+    public class ProfessorsController : ControllerBase 
     {
         private readonly IProfessorsService professorsService;
 
@@ -59,14 +59,14 @@ namespace Universitas.API.Controllers
         {
             await professorsService.DeleteAsync(id);
         }
-/*
+
         [HttpGet("{id}")]
         public async Task<IEnumerable<CourseDTO>> GetCoursesAsync(int id)
         {
             return (await professorsService.GetCoursesAsync(id)).Select(c => CoursesController.ToDTO(c));
         }
-*/
-        private static ProfessorDTO ToDTO(Professor p)
+
+        public static ProfessorDTO ToDTO(Professor p)
         {
             return new ProfessorDTO(p.Id, p.Name, p.Surname, p.NationalId);
         }

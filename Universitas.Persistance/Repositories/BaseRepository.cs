@@ -77,5 +77,27 @@ namespace Universitas.Persistance.Repositories
                 return await command.ExecuteReaderAsync();
             }
         }
+
+        protected async Task<List<T>> GetQueryReaderListAsync(string query,Func<NpgsqlDataReader,T> mapRowToModel, object[]? parameters = null)
+        {
+            using (NpgsqlCommand command = _dataSource.CreateCommand(query))
+            {
+                if (parameters != null)
+                {
+                    command.Parameters.AddRange(parameters.Select(p => new NpgsqlParameter(null, p)).ToArray());
+                }
+
+                using var reader = await command.ExecuteReaderAsync();
+
+                var readerList = new List<T>();
+
+                while (reader.Read())
+                {
+                    readerList.Add(mapRowToModel(reader));
+                }
+
+                return readerList;
+            }
+        }
     }
 }

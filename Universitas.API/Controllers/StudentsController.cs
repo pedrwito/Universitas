@@ -54,14 +54,14 @@ namespace Universitas.API.Controllers
         {
             await studentsService.DeleteAsync(id);
         }
-/*
+
         [HttpGet("{id}")]
         public async Task<IEnumerable<CourseDTO>> GetCoursesAsync(int id)
         {
             return (await studentsService.GetCoursesAsync(id)).Select(c => CoursesController.ToDTO(c));
         }
-*/
-        private static StudentDTO ToDTO(Student s)
+
+        public static StudentDTO ToDTO(Student s)
         {
             return new StudentDTO(s.Id, s.Name, s.Surname, s.NationalId, (StudentStatusDTO)s.Status);
         }

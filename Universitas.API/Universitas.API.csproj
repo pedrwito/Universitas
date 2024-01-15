@@ -11,7 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Universitas.ConsoleApp\Universitas.ConsoleApp.csproj" />
     <ProjectReference Include="..\Universitas.Contracts\Universitas.Contracts.csproj" />
+    <ProjectReference Include="..\Universitas.Persistance\Universitas.Persistance.csproj" />
     <ProjectReference Include="..\Universitas.Services\Universitas.Services.csproj" />
   </ItemGroup>
 

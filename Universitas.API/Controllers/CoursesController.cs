@@ -62,7 +62,7 @@ namespace Universitas.API.Controllers
         {
             await coursesService.EnrollProfessorAsync(courseId, dto.Id);
         }
-/*
+
         [HttpGet("{id}")]
         public async Task<IEnumerable<StudentDTO>> GetStudentsAsync(int id)
         {
@@ -74,8 +74,8 @@ namespace Universitas.API.Controllers
         {
             return (await coursesService.GetProfessorsAsync(id)).Select(p => ProfessorsController.ToDTO(p));
         }
-*/
-        private static CourseDTO ToDTO(Course c)
+
+        public static CourseDTO ToDTO(Course c)
         {
             return new CourseDTO(c.Id, c.Name);
         }
