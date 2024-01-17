@@ -4,7 +4,7 @@ using Universitas.Contracts.Repositories;
 
 namespace Universitas.Persistance.Repositories
 {
-    internal class ProfessorsRepository : BaseRepository<Professor>, IProfessorsRepository
+    public class ProfessorsRepository : BaseRepository<Professor>, IProfessorsRepository
     {
         public ProfessorsRepository(NpgsqlDataSource dataSource) : base(dataSource) { }
 

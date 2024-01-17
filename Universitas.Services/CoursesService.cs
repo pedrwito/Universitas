@@ -6,6 +6,7 @@ namespace Universitas.Services
 {
     public class CoursesService : ICoursesService
     {
+
         private void ValidateCourse(string name)
         {
             if (string.IsNullOrWhiteSpace(name))

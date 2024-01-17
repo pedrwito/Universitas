@@ -28,7 +28,7 @@ namespace Universitas.API.Controllers
 
         // GET api/<UniversitasController>/5
         [HttpGet("{id}")]
-        public async Task<CourseDTO> GetAsync(int id)
+        public async Task<CourseDTO> GetAsync([FromRoute] int id)
         {
             return ToDTO(await coursesService.GetByIdAsync(id));
         }
@@ -40,37 +40,37 @@ namespace Universitas.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<CourseDTO> PutAsync(int id, [FromBody] CourseCreateDTO dto)
+        public async Task<CourseDTO> PutAsync([FromRoute] int id, [FromBody] CourseCreateDTO dto)
         {
             return ToDTO(await coursesService.UpdateAsync(id, dto.Name));
         }
 
         [HttpDelete("{id}")]
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync([FromRoute] int id)
         {
             await coursesService.DeleteAsync(id);
         }
 
         [HttpPost("{courseId}/students")]
-        public async Task EnrollStudent(int courseId, [FromBody] StudentEnrollDTO dto)
+        public async Task EnrollStudent([FromRoute] int courseId, [FromBody] StudentEnrollDTO dto)
         {
             await coursesService.EnrollStudentAsync(courseId, dto.Id);
         }
 
         [HttpPost("{courseId}/professors")]
-        public async Task EnrollProfessor(int courseId, [FromBody] ProfessorEnrollDTO dto)
+        public async Task EnrollProfessor([FromRoute] int courseId, [FromBody] ProfessorEnrollDTO dto)
         {
             await coursesService.EnrollProfessorAsync(courseId, dto.Id);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IEnumerable<StudentDTO>> GetStudentsAsync(int id)
+        [HttpGet("{id}/students")]
+        public async Task<IEnumerable<StudentDTO>> GetStudentsAsync([FromRoute] int id)
         {
             return (await coursesService.GetStudentsAsync(id)).Select(s => StudentsController.ToDTO(s));
         }
 
-        [HttpGet("{id}")]
-        public async Task<IEnumerable<ProfessorDTO>> GetProfessorsAsync(int id)
+        [HttpGet("{id}/professors")]
+        public async Task<IEnumerable<ProfessorDTO>> GetProfessorsAsync([FromRoute] int id)
         {
             return (await coursesService.GetProfessorsAsync(id)).Select(p => ProfessorsController.ToDTO(p));
         }

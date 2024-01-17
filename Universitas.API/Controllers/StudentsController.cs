@@ -29,7 +29,7 @@ namespace Universitas.API.Controllers
 
         // GET api/students/5
         [HttpGet("{id}")]
-        public async Task<StudentDTO> GetAsync(int id)
+        public async Task<StudentDTO> GetAsync([FromRoute] int id)
         {
             return ToDTO(await studentsService.GetByIdAsync(id));
         }
@@ -43,20 +43,20 @@ namespace Universitas.API.Controllers
 
         // PUT api/students/5
         [HttpPut("{id}")]
-        public async Task<StudentDTO> PutAsync(int id, [FromBody] StudentUpdateDTO dto)
+        public async Task<StudentDTO> PutAsync([FromRoute] int id, [FromBody] StudentUpdateDTO dto)
         {
             return ToDTO(await studentsService.UpdateAsync(id, dto.Name, dto.Surname, dto.NationalId, (int)dto.Status));
         }
 
         // DELETE api/students/5
         [HttpDelete("{id}")]
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync([FromRoute] int id)
         {
             await studentsService.DeleteAsync(id);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IEnumerable<CourseDTO>> GetCoursesAsync(int id)
+        [HttpGet("{id}/courses")]
+        public async Task<IEnumerable<CourseDTO>> GetCoursesAsync([FromRoute] int id)
         {
             return (await studentsService.GetCoursesAsync(id)).Select(c => CoursesController.ToDTO(c));
         }

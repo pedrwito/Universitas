@@ -28,7 +28,7 @@ namespace Universitas.API.Controllers
 
         // GET api/<UniversitasController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProfessorDTO>> GetAsync(int id)
+        public async Task<ActionResult<ProfessorDTO>> GetAsync([FromRoute] int id)
         {
             try
             {
@@ -48,20 +48,20 @@ namespace Universitas.API.Controllers
 
         // PUT api/<UniversitasController>/5
         [HttpPut("{id}")]
-        public async Task<ProfessorDTO> PutAsync(int id, [FromBody] ProfessorCreateDTO dto)
+        public async Task<ProfessorDTO> PutAsync([FromRoute]int id, [FromBody] ProfessorCreateDTO dto)
         {
             return ToDTO(await professorsService.UpdateAsync(id, dto.Name, dto.Surname, dto.NationalId));
         }
 
         // DELETE api/<UniversitasController>/5
         [HttpDelete("{id}")]
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync([FromRoute] int id)
         {
             await professorsService.DeleteAsync(id);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IEnumerable<CourseDTO>> GetCoursesAsync(int id)
+        [HttpGet("{id}/courses")]
+        public async Task<IEnumerable<CourseDTO>> GetCoursesAsync([FromRoute] int id)
         {
             return (await professorsService.GetCoursesAsync(id)).Select(c => CoursesController.ToDTO(c));
         }
